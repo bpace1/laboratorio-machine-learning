@@ -1,37 +1,27 @@
-import pickle
 import json
 from flask import Flask, request
-import pandas as pd
+import numpy as np
 
-
-FEATURES = pickle.load(open("churn/models/features.pk", "rb"))
-
-model = pickle.load(open("churn/models/model.pk", "rb"))
-column_equivalence = pickle.load(open("churn/models/column_equivalence.pk", "rb"))
-
-# create the Flask app
+# Example Flask app
 app = Flask(__name__)
 
-def convert_numerical(features):
-    output = []
-    for i, feat in enumerate(features):
-        if i in column_equivalence:
-            output.append(column_equivalence[i][feat])
-        else:
-            try:
-                output.append(pd.to_numeric(feat))
-            except:
-                output.append(0)
-    return output
+# Placeholder model for demonstration (replace with your actual model)
+class Model:
+    def predict(self, features):
+        # Simulate predictions
+        return np.random.randint(0, 2, size=len(features))  # Example binary output
 
-@app.route('/query')
+model = Model()  # Replace with your trained model
+
+# Define a valid input example
 def query_example():
-    features = convert_numerical(request.args.get('feats').split(','))
+    # Example feature input
+    example_features = [[0.5, 1.2, 3.4]]  # Replace with appropriate features for your model
     response = {
-        'response': [int(x) for x in model.predict([features])]
+        'response': [int(x) for x in model.predict(example_features)]  # Process predictions
     }
     return json.dumps(response)
 
 if __name__ == '__main__':
-    # run app in debug mode on port 3001
+    # Run the app in debug mode on port 3001
     app.run(debug=True, port=3001)
